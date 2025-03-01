@@ -89,7 +89,7 @@ submitButton.addEventListener('click', async () => {
     formData.append('sessions', sessions);
     
 
-    const apiUrl = 'https://tsa-backend-thuu.onrender.com';
+    const apiUrl = 'http://localhost:5000';
 
     try {
       

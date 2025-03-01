@@ -1,62 +1,52 @@
 // API URL
-const apiUrl = 'https://tsa-backend-thuu.onrender.com'; // Replace with your API endpoint
+const apiUrl = "http://localhost:5000"; // Replace with your API endpoint
 
 // Container to hold blog cards
-const blogContainer = document.getElementById('blog-container');
+const blogContainer = document.getElementById("blog-container");
 var blogsArr = null;
 
-
 function activateLoader() {
-  const loader = document.getElementById('loader');
-  loader.style.display = 'flex'; // Display the loader
+  const loader = document.getElementById("loader");
+  loader.style.display = "flex"; // Display the loader
 }
 
 // Hide loader
 function deactivateLoader() {
-  const loader = document.getElementById('loader');
-  loader.style.display = 'none'; // Hide the loader
+  const loader = document.getElementById("loader");
+  loader.style.display = "none"; // Hide the loader
 }
-
 
 // Fetch blogs from API
 async function fetchBlogs() {
-  activateLoader()
+  activateLoader();
   try {
     const response = await fetch(`${apiUrl}/api/blogs`);
     if (!response.ok) {
-      throw new Error('Failed to fetch blogs');
+      throw new Error("Failed to fetch blogs");
     }
 
     const blogs = await response.json(); // Assuming the response is in JSON format
     blogsArr = blogs;
     renderBlogs(blogs);
   } catch (error) {
-    console.error('Error fetching blogs:', error);
-    blogContainer.innerHTML = '<p class="text-red-500">Failed to load blogs.</p>';
+    console.error("Error fetching blogs:", error);
+    blogContainer.innerHTML =
+      '<p class="text-red-500">Failed to load blogs.</p>';
   } finally {
-    deactivateLoader()
+    deactivateLoader();
   }
 }
 
-
-
-
-
-
-
-
 // Render blogs dynamically
 function renderBlogs(blogs) {
-  blogs.forEach(blog => {
-    
-
+  blogs.forEach((blog) => {
     const blogCard = `
         <div class="w-full sm:w-[300px] max-h-[365px] ">
     <div class="bg-white border border-gray-200 max-h-[365px]  rounded-lg shadow hover:shadow-lg">
       <!-- Blog Image -->
       <img 
         class="w-full h-48 object-cover rounded-t-lg" 
-        src="${apiUrl}/${blog.Img.replace(/\\/g, '/')}"
+        src="${apiUrl}/${blog.Img.replace(/\\/g, "/")}"
         alt="Blog Thumbnail" 
       />
       <!-- Blog Content -->
@@ -98,61 +88,56 @@ function renderBlogs(blogs) {
 // Call the function to fetch and render blogs
 fetchBlogs();
 
-
 // deleteFuctinality
 
 // Elements for modal and buttons
-const deleteModal = document.getElementById('deleteModal');
-const confirmButton = document.getElementById('confirmButton');
-const cancelButton = document.getElementById('cancelButton');
-const modalTitle = document.getElementById('modalTitle');
-const modalContent = document.getElementById('modalContent');
+const deleteModal = document.getElementById("deleteModal");
+const confirmButton = document.getElementById("confirmButton");
+const cancelButton = document.getElementById("cancelButton");
+const modalTitle = document.getElementById("modalTitle");
+const modalContent = document.getElementById("modalContent");
 
 let blogToDelete = null;
 
 function showDeleteModal(blog) {
   blogToDelete = blog; // Store blog info (e.g., { id, name })
-  
-  
-  modalTitle.textContent = 'Confirm Deletion';
+
+  modalTitle.textContent = "Confirm Deletion";
   modalContent.textContent = `Are you sure you want to delete the blog "${blog.name}"?`;
-  deleteModal.classList.remove('hidden');
+  deleteModal.classList.remove("hidden");
 }
 
 function hideDeleteModal() {
   blogToDelete = null;
-  deleteModal.classList.add('hidden');
+  deleteModal.classList.add("hidden");
 }
 
 async function deleteBlog(blog) {
   try {
-
     const response = await fetch(`${apiUrl}/api/blogs/${blog.id}`, {
-      method: 'DELETE',
+      method: "DELETE",
       headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${sessionStorage.getItem('authToken')}`
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${sessionStorage.getItem("authToken")}`,
       },
       body: JSON.stringify(blog), // Sending blog details in the body
     });
     if (response.ok) {
       alert(`Blog "${blog.name}" deleted successfully.`);
-      window.location.reload()
+      window.location.reload();
     } else {
-
-      alert('Failed to delete the blog.');
+      alert("Failed to delete the blog.");
     }
   } catch (error) {
-    console.error('Error:', error);
-    alert('An error occurred while deleting the blog.');
+    console.error("Error:", error);
+    alert("An error occurred while deleting the blog.");
   }
 }
 
-confirmButton.addEventListener('click', () => {
+confirmButton.addEventListener("click", () => {
   if (blogToDelete) deleteBlog(blogToDelete);
 });
-cancelButton.addEventListener('click', hideDeleteModal);
-
+cancelButton.addEventListener("click", hideDeleteModal);
 
 const searchModal = document.getElementById("searchModal");
 const closeModal = document.getElementById("closeModal");
@@ -163,10 +148,17 @@ const displayBlogs = (blogsToShow) => {
   blogList.innerHTML = ""; // Clear previous results
 
   blogsToShow.forEach((blog) => {
-
     const li = document.createElement("li");
-    li.className = "flex items-center p-4 bg-gray-100 rounded hover:bg-gray-200 cursor-pointer";
-    li.onclick = ()=> showEditModal({ _id: blog._id, title: blog.title, category: blog.category, Img: blog.Img.slice(8),  content: blog.content })
+    li.className =
+      "flex items-center p-4 bg-gray-100 rounded hover:bg-gray-200 cursor-pointer";
+    li.onclick = () =>
+      showEditModal({
+        _id: blog._id,
+        title: blog.title,
+        category: blog.category,
+        Img: blog.Img.slice(8),
+        content: blog.content,
+      });
 
     // Create and append the image
     const img = document.createElement("img");
@@ -187,9 +179,8 @@ const displayBlogs = (blogsToShow) => {
 const searchClick = async () => {
   searchModal.classList.remove("hidden");
 
-
   displayBlogs(blogsArr.slice(0, 5)); // Display all blogs initially
-}
+};
 
 closeModal.addEventListener("click", () => {
   searchModal.classList.add("hidden");
@@ -198,15 +189,7 @@ closeModal.addEventListener("click", () => {
 searchInput.addEventListener("input", (e) => {
   const query = e.target.value.toLowerCase();
   const filteredBlogs = blogsArr.filter((blog) =>
-    blog.title.toLowerCase().includes(query)
+    blog.title.toLowerCase().includes(query),
   );
   displayBlogs(filteredBlogs); // Display filtered blogs
 });
-
-
-
-
-
-
-
-
